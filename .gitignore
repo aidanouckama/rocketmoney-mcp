@@ -1,0 +1,16 @@
+node_modules/
+.env*
+*.log
+coverage/
+session.json
+state/
+storage.json
+migration.json
+.session-*
+.lock/
+*.har
+*.csv
+*.tsv
+*.tgz
+dependency-audit.json
+.DS_Store

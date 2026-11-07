@@ -1,0 +1,29 @@
+name: Bug report
+description: Report a reproducible problem using redacted or synthetic data.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Never attach cookies, passwords, MFA codes, session files, HAR exports, financial screenshots, account identifiers, or real transaction exports. For vulnerabilities, follow SECURITY.md instead.
+  - type: checkboxes
+    attributes:
+      label: Privacy check
+      options:
+        - label: I removed credentials and personal financial data from this report.
+          required: true
+  - type: input
+    attributes:
+      label: Version and environment
+      description: Connector version, Node version, OS/architecture and MCP host name. No username or home-directory paths.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: What happened?
+      description: Expected behavior, actual behavior, and the safe error code only.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Reproduction with fake data
+      description: Include a minimal synthetic example. Do not paste raw API responses.

@@ -1,0 +1,11 @@
+name: Feature request
+description: Suggest a use case without personal financial data.
+body:
+  - type: markdown
+    attributes:
+      value: Do not include credentials, financial screenshots, account identifiers, session files, or transaction exports.
+  - type: textarea
+    attributes:
+      label: Use case and expected behavior
+    validations:
+      required: true

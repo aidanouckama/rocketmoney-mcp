@@ -1,0 +1,58 @@
+{
+  "name": "rocketmoney-mcp",
+  "version": "0.2.0",
+  "type": "module",
+  "description": "Experimental local read-only Rocket Money MCP with macOS Keychain, private Linux storage and explicit financial-data limitations",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "auth": "node src/auth.js",
+    "test": "node --test test/*.test.js",
+    "check": "node scripts/check-syntax.js && npm test",
+    "check:package": "node scripts/check-package.js",
+    "test:keychain": "node scripts/test-keychain.js",
+    "prepublishOnly": "npm run check && npm run check:package"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.4.0",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "2.4.0"
+  },
+  "optionalDependencies": {
+    "@napi-rs/keyring": "2.1.2"
+  },
+  "license": "MIT",
+  "author": "ouckah",
+  "os": [
+    "darwin",
+    "linux"
+  ],
+  "bin": {
+    "rocketmoney-mcp": "bin/rocketmoney-mcp.js",
+    "rocketmoney-auth": "bin/rocketmoney-auth.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "docs/",
+    "README.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES",
+    "SECURITY.md",
+    "CHANGELOG.md",
+    "mcp-config.example.json",
+    "CONTRIBUTING.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aidanouckama/rocketmoney-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aidanouckama/rocketmoney-mcp/issues"
+  },
+  "homepage": "https://github.com/aidanouckama/rocketmoney-mcp#readme"
+}
