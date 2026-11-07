@@ -8,6 +8,8 @@
   migration that preserves old credentials until the new storage is durable.
 - Safe temporary-file cleanup, dead-process lock recovery and interrupted
   terminal-import cleanup.
+- Retry lock inspection when normal release unlinks an open owner file,
+  avoiding false unsafe-storage errors during concurrent requests.
 - Preserve Rocket Money's transactionStatus, with null/missing-data semantics
   documented prominently. No automatic complete financial totals.
 - Generic setup examples and fictional test amounts; npm package allowlist and

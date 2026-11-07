@@ -161,6 +161,8 @@ test('timeouts release the lock and do not poison later requests', async t => {
   const client = new RocketMoneyClient(store, { timeoutMs: 50, fetchImpl: async (_, { signal }) =>
     new Promise((_, reject) => { const timer = setTimeout(() => reject(new Error('test guard')), 1000); signal.addEventListener('abort', () => { clearTimeout(timer); reject(signal.reason); }, { once: true }); }) });
   await assert.rejects(client.verify(), { code: 'REQUEST_CANCELLED' });
+  // The retry checks recovery, not disk speed on a shared CI runner.
+  client.timeoutMs = 20000;
   client.fetchImpl = async () => jsonResponse({ viewer: { id: 'fake' } });
   assert.equal((await client.verify()).authenticated, true);
 });

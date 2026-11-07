@@ -133,6 +133,48 @@ test('crashed process lock is recovered and leftover temp files removed', async 
   assert.deepEqual(await fs.readdir(store.directory), ['session.json']);
 });
 
+for (const replacement of [false, true]) {
+  test(`owner unlinked during inspection retries safely (replacement: ${replacement})`, async t => {
+    const store = await storeFor(t);
+    const owner = join(store.lock, 'owner');
+    await fs.mkdir(store.lock, { mode: 0o700 });
+    await fs.writeFile(owner, String(process.pid), { mode: 0o600 });
+    // An old directory ensures the retry does not depend on the grace period.
+    await fs.utimes(store.lock, new Date(0), new Date(0));
+    let raced = false, observedLinks;
+    const io = { ...fs, open: async (...args) => {
+      const handle = await fs.open(...args);
+      if (!raced && args[0] === owner) {
+        raced = true;
+        await fs.unlink(owner);
+        if (replacement) await fs.writeFile(owner, String(process.pid), { mode: 0o600 });
+        observedLinks = (await handle.stat()).nlink;
+      }
+      return handle;
+    } };
+    assert.equal(await recoverLock(store.lock, { io }), false);
+    assert.equal(observedLinks, 0);
+    assert.ok((await fs.stat(store.lock)).isDirectory());
+    if (replacement) {
+      assert.equal(await fs.readFile(owner, 'utf8'), String(process.pid));
+      assert.equal(await recoverLock(store.lock), false);
+      await fs.unlink(owner);
+    }
+    await fs.rmdir(store.lock);
+    await store.withLock(async () => assert.equal((await store.read()).cookie, FAKE));
+  });
+}
+
+test('hard-linked lock owners still fail closed', async t => {
+  const store = await storeFor(t);
+  await fs.mkdir(store.lock, { mode: 0o700 });
+  const owner = join(store.lock, 'owner');
+  await fs.writeFile(owner, String(process.pid), { mode: 0o600 });
+  await fs.link(owner, join(store.directory, 'owner-alias'));
+  await assert.rejects(recoverLock(store.lock), { code: 'UNSAFE_STORAGE' });
+  assert.equal(await fs.readFile(owner, 'utf8'), String(process.pid));
+});
+
 test('ownerless locks get a grace period and concurrent recovery cannot steal a fresh lock', async t => {
   const store = await storeFor(t);
   await fs.mkdir(store.lock, { mode: 0o700 });
