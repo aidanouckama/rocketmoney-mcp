@@ -18,7 +18,10 @@ try {
     assert.ok(packed.files.some(f => f.path === required), `Missing package file: ${required}`);
   }
   const install = join(temp, 'install');
-  execFileSync('npm', ['install', '--prefix', install, '--ignore-scripts', '--offline', '--no-audit', '--no-fund', join(temp, packed.filename)], { stdio: 'pipe' });
+  // npm ci caches tarballs but may not cache registry metadata. Verify a real
+  // clean install by default; offline mode is an explicit local convenience.
+  const registryMode = process.env.ROCKETMONEY_PACKAGE_OFFLINE === '1' ? ['--offline'] : ['--cache', join(temp, 'npm-cache')];
+  execFileSync('npm', ['install', '--prefix', install, '--ignore-scripts', ...registryMode, '--no-audit', '--no-fund', join(temp, packed.filename)], { stdio: 'pipe' });
   for (const name of ['rocketmoney-mcp', 'rocketmoney-auth']) {
     const output = execFileSync(join(install, 'node_modules', '.bin', name), ['--help'], { encoding: 'utf8' });
     assert.ok(output.includes(name));

@@ -215,7 +215,9 @@ npm run test:keychain
 ```
 
 Standard tests use fake data and isolated storage. The package check inspects
-allowed files and installs the packed artifact offline to verify both commands.
+allowed files and installs the packed artifact with an isolated npm cache to
+verify both commands. It requires registry access. For a local cache-only check,
+set `ROCKETMONEY_PACKAGE_OFFLINE=1`; that mode requires pre-cached metadata too.
 CI is configured for macOS/Linux and Node 22.12/24; its configuration is not a
 claim that remote CI has already run. A clean audit is not a security guarantee.
 
